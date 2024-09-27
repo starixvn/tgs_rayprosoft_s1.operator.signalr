@@ -1,5 +1,6 @@
 using RandomNameGeneratorLibrary;
 using S1.Operator.SignalR.Hubs;
+using S1.Operator.SignalR.Services;
 using S1.Operator.SignalR.Workers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,7 @@ builder.Services.AddSignalR();
 builder.Services.AddSingleton<LastBetHub>();
 builder.Services.AddHostedService<GenerateRoundWorker>();
 builder.Services.AddSingleton<IPersonNameGenerator, PersonNameGenerator>();
+builder.Services.AddSingleton<IGenerateName, GenerateName>();
 builder.Services.AddControllers();
 builder.Services.AddHealthChecks();
 builder.Services.AddCors();

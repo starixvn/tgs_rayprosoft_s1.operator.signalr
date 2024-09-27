@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using RandomNameGeneratorLibrary;
+using S1.Operator.SignalR.Constants;
 using S1.Operator.SignalR.Hubs;
 using S1.Operator.SignalR.Models;
+using S1.Operator.SignalR.Services;
 
 namespace S1.Operator.SignalR.Workers;
 
-public class GenerateRoundWorker(IHubContext<LastBetHub> hubContext, IPersonNameGenerator personNameGenerator) : BackgroundService
+public class GenerateRoundWorker(IHubContext<LastBetHub> hubContext, IGenerateName generateName) : BackgroundService
 {
-    private static readonly Random Random = new Random();
+    private static readonly Random Random = new();
 
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -22,30 +23,23 @@ public class GenerateRoundWorker(IHubContext<LastBetHub> hubContext, IPersonName
 
     private BetItem GenerateBetItem()
     {
+        var gameIndex = Random.Next(0, GameStore.records.Count - 1);
+        var gameInfo = GameStore.records[gameIndex];
         return new BetItem
         {
             Id = Guid.NewGuid(),
-            PlayerName = GenerateName(),
+            PlayerName = generateName.RandomName(),
             BetAmount = Random.Next(1, 100),
-            GameId = int.Parse($"74000{Random.Next(1, 99)}"),
-            GameName = GenerateRandomCode(6),
+            GameId = gameInfo.GameId,
+            GameCode = gameInfo.GameCode,
+            GameType = gameInfo.GameType,
+            GameName = gameInfo.GameCode.Replace("game-", "").Replace("-", " "),
             PlayerCode = GenerateRandomCode(12),
             Payout = Random.Next(-100, 1000),
             BrandId = new Guid("8acacf5a-d808-4a55-8302-d832ee3da6dc"),
-            GameProviderCode = GenerateRandomCode(6),
+            GameProviderCode = gameInfo.GameProviderCode,
             Multiplier = (decimal)Math.Round((Random.Next(0, 2) + Random.NextDouble()), 1, MidpointRounding.ToEven)
         };
-    }
-
-    private string GenerateName()
-    {
-        var randomType = Random.Next(1, 3);
-
-        if (randomType / 2 != 0)
-        {
-            return $"User{Random.Next(1000000, 9999999)}";
-        }
-        return personNameGenerator.GenerateRandomFirstAndLastName();
     }
 
     private static string GenerateRandomCode(int length)

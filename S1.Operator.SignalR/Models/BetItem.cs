@@ -14,6 +14,10 @@ public class BetItem
 
     public int GameId { get; set; }
 
+    public string GameCode { get; set; }
+
+    public int GameType { get; set; }
+
     public string GameName { get; set; }
 
     public string GameProviderCode { get; set; }
