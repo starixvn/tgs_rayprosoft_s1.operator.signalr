@@ -26,5 +26,6 @@ public class BetItem
 
     public decimal Multiplier { get; set; }
 
+    public DateTime TimeBet { get; set; }
 
 }

@@ -17,7 +17,7 @@ public class GenerateRoundWorker(IHubContext<LastBetHub> hubContext, IGenerateNa
         {
             var randomItem = GenerateBetItem();
             await hubContext.Clients.Group(randomItem.BrandId.ToString()).SendAsync("ReceiveLastBet", randomItem, cancellationToken: stoppingToken);
-            await Task.Delay(600, stoppingToken);
+            await Task.Delay(1000, stoppingToken);
         }
     }
 
@@ -38,7 +38,8 @@ public class GenerateRoundWorker(IHubContext<LastBetHub> hubContext, IGenerateNa
             Payout = Random.Next(-100, 1000),
             BrandId = new Guid("8acacf5a-d808-4a55-8302-d832ee3da6dc"),
             GameProviderCode = gameInfo.GameProviderCode,
-            Multiplier = (decimal)Math.Round((Random.Next(0, 2) + Random.NextDouble()), 1, MidpointRounding.ToEven)
+            Multiplier = (decimal)Math.Round((Random.Next(0, 2) + Random.NextDouble()), 1, MidpointRounding.ToEven),
+            TimeBet = DateTime.Now
         };
     }
 
