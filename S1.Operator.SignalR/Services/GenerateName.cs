@@ -1,4 +1,5 @@
 ﻿using RandomNameGeneratorLibrary;
+using S1.Operator.SignalR.Constants;
 
 namespace S1.Operator.SignalR.Services;
 
@@ -6,40 +7,32 @@ public interface IGenerateName
 {
     string RandomName();
 }
+
 public class GenerateName(IPersonNameGenerator personNameGenerator) : IGenerateName
 {
     private static readonly Random Random = new();
 
-    private static readonly List<string> oneWordNames = new List<string>
-    {
-        "Snickers", "Twitch", "Muffin", "Waffles", "Sprinkles", "Buttons", "Cupcake",
-        "Noodle", "Whiskers", "Zigzag", "Flapjack", "Scooter", "Fudge", "Doodle", "Scrappy",
-        "Bingo", "Chomper", "Gizmo", "Pudding", "Wobble", "Squiggle", "Fluffy", "Zoom",
-        "Puff", "Tater", "Rumble", "Spud", "Pickles"
-    };
+
 
     public string RandomName()
     {
-        var randomType = Random.Next(1, 3);
+        var randomType = Random.Next(1, 8);
 
         return randomType switch
         {
-            1 => $"User{Random.Next(1000000, 9999999)}",
-            2 => GetFunnyName(),
-            _ => personNameGenerator.GenerateRandomFirstAndLastName()
+            1 => personNameGenerator.GenerateRandomFirstAndLastName(),
+            2 => personNameGenerator.GenerateRandomLastName(),
+            3 => GetNameWithNumber(),
+            4 => PlayerNames.OneWordNames[Random.Next(PlayerNames.OneWordNames.Count)],
+            5 => PlayerNames.TwoWordNames[Random.Next(PlayerNames.TwoWordNames.Count)],
+            _ => $"User{Random.Next(1000000, 9999999)}"
         };
     }
 
-    private static string GetFunnyName()
+    private string GetNameWithNumber()
     {
-        var oneWordName = oneWordNames[Random.Next(oneWordNames.Count)];
+        var oneWordName = personNameGenerator.GenerateRandomLastName();
 
-        if (Random.Next(10) >= 3)
-        {
-            return oneWordName;
-        }
-        var randomNumber = Random.Next(10, 100);
-        oneWordName += randomNumber;
-        return oneWordName;
+        return oneWordName + Random.Next(10, 1000);
     }
 }
