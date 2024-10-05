@@ -16,7 +16,7 @@ public class GenerateRoundWorker(IHubContext<LastBetHub> hubContext, IGenerateNa
         while (!stoppingToken.IsCancellationRequested)
         {
             var randomItem = GenerateBetItem();
-            await hubContext.Clients.Group(randomItem.BrandId.ToString()).SendAsync("ReceiveLastBet", randomItem, cancellationToken: stoppingToken);
+            await hubContext.Clients.All.SendAsync("ReceiveLastBet", randomItem, cancellationToken: stoppingToken);
             await Task.Delay(1000, stoppingToken);
         }
     }
